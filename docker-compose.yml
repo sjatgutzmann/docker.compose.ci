@@ -23,16 +23,15 @@ services:
 #    networks:
 #      - sonarnet
     environment:
-      - PG_CREATE_USER=sonar
-      - PG_CREATE_PASSWORD=sonar
-      - PG_CREATE_DB=sonar
-      #- POSTGRES_PASSWORD=sonar
+      - PG_CREATE_USER=sonar,archiva
+      - PG_CREATE_PASSWORD=sonar,archiva
+      - PG_CREATE_DB=sonar,archiva_users
     volumes:
       #- postgresql:/var/lib/postgresql
-      - postgres4sonar:/var/log/postgres
+      - postgres4all:/var/log/postgres
       # This needs explicit mapping due to https://github.com/docker-library/postgres/blob/4e48e3228a30763913ece952c611e5e9b95c8759/Dockerfile.template#L52
       # - postgresql_data:/var/lib/postgresql/data
-      - pgdata4sonar:/var/lib/pgsql/9.3/data
+      - pgdata4all:/var/lib/pgsql/9.3/data
 
   git:
     image: sjatgutzmann/docker.centos.gitblit
@@ -55,6 +54,30 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
 
+  archiva:
+    image: sjatgutzmann/docker.centos.archiva
+    environment:
+      - HTTP_PORT=8585
+      - DO_INIT=true
+      - DB_TYPE=postgres
+      - DB_HOST=db
+      - DB_USER=archiva
+      - DB_PASS=archiva
+      - USERS_DB_NAME=archiva_users
+    ports:
+      - 8282:8585
+    volumes:
+      - archiva_data:/archiva-data
+    depends_on:
+      - db
+  
+  pgadmin:
+    image: sjatgutzmann/docker.centos.pgadmin
+    ports:
+      - 9898:8080
+    depends_on:
+      - db    
+    
 #networks:
 #  sonarnet:
 #    driver: bridge
@@ -64,7 +87,8 @@ volumes:
   sonarqube_data:
   sonarqube_extensions:
   sonarqube_bundled_plugins:
-  postgres4sonar:
-  pgdata4sonar:
+  postgres4all:
+  pgdata4all:
   gitblit_data:
   jenkins_home:
+  archiva_data:  
