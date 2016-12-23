@@ -38,13 +38,22 @@ services:
     environment:
       - HTTP_PORT=9080
       - HTTPS_PORT=9443
+      # mirror another gitblit server
+      - FEDERATION1_URL=https://dev.gitblit.com
+      # token from the log of the gitblit server to mirror
+      - FEDERATION1_TOKEN=6f3b8a24bf970f17289b234284c94f43eb42f0e4
+      - FEDERATION1_MIRROR=true
+      - FEDERATION1_BARE=true
+      - FEDERATION1_MERGE_ACCOUNTS=false
+      - FEDERATION1_TIME=60 mins
+      - FEDERATION1_FOLDER=gitblit 
     ports:
       - 9080:9080
       - 9443:9443
       - 9418:9418
       - 29418:29418
     volumes:
-      - gitblit_data:/opt/gitblit-data
+      - gitblit_data:/opt/gitblit/data
 
   jenkins:
     image: sjatgutzmann/docker.centos.jenkins
