@@ -42,11 +42,11 @@ services:
       - FEDERATION1_URL=https://dev.gitblit.com
       # token from the log of the gitblit server to mirror
       - FEDERATION1_TOKEN=6f3b8a24bf970f17289b234284c94f43eb42f0e4
-      - FEDERATION1_MIRROR=true
+      - FEDERATION1_MIRROR=false
       - FEDERATION1_BARE=true
       - FEDERATION1_MERGE_ACCOUNTS=false
       - FEDERATION1_TIME=60 mins
-      - FEDERATION1_FOLDER=gitblit 
+      - FEDERATION1_FOLDER=gitblit
     ports:
       - 9080:9080
       - 9443:9443
@@ -61,7 +61,7 @@ services:
       - 8080:8080
       - 50000:50000
     volumes:
-      - jenkins_home:/var/jenkins_home
+      - jenkins_home:/var/lib/jenkins/
 
   archiva:
     image: sjatgutzmann/docker.centos.archiva
@@ -81,9 +81,13 @@ services:
       - db
   
   pgadmin:
-    image: sjatgutzmann/docker.centos.pgadmin
+    image: sjatgutzmann/docker.centos.pgstudio
     ports:
-      - 9898:8080
+      - 9898:9898
+    build:
+        context: https://github.com/sjatgutzmann/docker.centos.pgstudio.git
+        args:
+           - HTTP_PORT=9898
     depends_on:
       - db    
     
